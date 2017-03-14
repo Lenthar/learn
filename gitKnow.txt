@@ -71,4 +71,55 @@
 		|/
 		*   59bc1cb conflict fixed
 	Bug分支
+		当你接到一个修复一个代号101的bug的任务时，很自然地，你想创建一个分支issue-101来修复它，但是，等等，当前正在dev上进行的工作还没有提交：
+			$ git stash
+			
+			修复完成后，切换到master分支，并完成合并，最后删除issue-101分支：
+				$ git checkout master
+				Switched to branch 'master'
+				Your branch is ahead of 'origin/master' by 2 commits.
+				
+				$ git merge --no-ff -m "merged bug fix 101" issue-101
+				Merge made by the 'recursive' strategy.
+				 readme.txt |    2 +-
+				 1 file changed, 1 insertion(+), 1 deletion(-)
+				$ git branch -d issue-101
+				Deleted branch issue-101 (was cc17032).
+
+			修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；
+			当手头工作没有完成时，先把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场。
+
+	Feature分支
+		添加一个新功能时，你肯定不希望因为一些实验性质的代码，把主分支搞乱了，所以，每添加一个新功能，最好新建一个feature分支，在上面开发，完成后，合并，最后，删除该feature分支。
+			一切顺利的话，feature分支和bug分支是类似的，合并，然后删除。
+
+			但是，就在此时，接到上级命令，因经费不足，新功能必须取消！虽然白干了，但是这个分支还是必须就地销毁：
+
+			$ git branch -d feature-vulcan
+			error: The branch 'feature-vulcan' is not fully merged.
+			If you are sure you want to delete it, run 'git branch -D feature-vulcan'.
+
+			销毁失败。Git友情提醒，feature-vulcan分支还没有被合并，如果删除，将丢失掉修改，如果要强行删除，需要使用命令git branch -D feature-vulcan。
+
+			现在我们强行删除：
+			$ git branch -D feature-vulcan
+			Deleted branch feature-vulcan (was 756d4af).
+	多人协作
+			多人协作的工作模式通常是这样：
+
+					首先，可以试图用git push origin branch-name推送自己的修改；
+					如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+					如果合并有冲突，则解决冲突，并在本地提交；
+					没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！
+				如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，用命令git branch --set-upstream branch-name origin/branch-name。
+
+				这就是多人协作的工作模式，一旦熟悉了，就非常简单。
+				小结
+					查看远程库信息，使用git remote -v；
+					本地新建的分支如果不推送到远程，对其他人就是不可见的；
+					从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；
+					在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；
+					建立本地分支和远程分支的关联，使用git branch --set-upstream branch-name origin/branch-name；
+					从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。
+标签管理
 
