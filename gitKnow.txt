@@ -34,4 +34,41 @@
 	$ git clone git@github.com:lenthar/gitskills.git
 	
 分支管理
-	
+	创建与合并分支
+		Git鼓励大量使用分支：
+			查看分支：git branch
+			创建分支：git branch <name>
+			切换分支：git checkout <name>
+			创建+切换分支：git checkout -b <name>
+			合并某分支到当前分支：git merge <name>
+			删除分支：git branch -d <name>
+	解决冲突
+		人生不如意之事十之八九，合并分支往往也不是一帆风顺的。
+			用带参数的git log也可以看到分支的合并情况：
+
+			$ git log --graph --pretty=oneline --abbrev-commit
+			*   59bc1cb conflict fixed
+			|\
+			| * 75a857c AND simple
+			* | 400b400 & simple
+			|/
+			* fec145a branch test
+			...
+			
+		当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。
+		用git log --graph命令可以看到分支合并图。
+	分支管理策略
+		准备合并dev分支，请注意--no-ff参数，表示禁用Fast forward：
+		$ git merge --no-ff -m "merge with no-ff" dev
+		
+		因为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去。
+
+		合并后，我们用git log看看分支历史：
+		$ git log --graph --pretty=oneline --abbrev-commit
+		*   7825a50 merge with no-ff
+		|\
+		| * 6224937 add merge
+		|/
+		*   59bc1cb conflict fixed
+	Bug分支
+
